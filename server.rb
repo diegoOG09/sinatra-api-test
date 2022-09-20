@@ -87,6 +87,12 @@ namespace '/api/v1' do
       body BookSerializer.new(book).to_json
     end
   end
+
+  delete '/books/:id' do |id|
+    book = Book.where(id: id).first
+    book.destroy if book
+    status 204
+  end
 end
 
 class BookSerializer
