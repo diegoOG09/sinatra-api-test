@@ -17,6 +17,7 @@ class Book
   validates :title, presence: true
   validates :author, presence: true
   validates :isbn, presence: true
+  validates :image, presence: true
 
   index({ title: 'text' })
   index({ isbn:1 }, { unique: true, name: "isbn_index" })
@@ -24,6 +25,7 @@ class Book
   scope :title, -> (title) { where(title: /^#{title}/) }
   scope :isbn, -> (isbn) { where(isbn: isbn)  }
   scope :author, -> (author) { where(author: author) }
+  scope :image, -> (image) { where(image: image) }
 end
 
 # Serializers
@@ -37,7 +39,8 @@ class BookSerializer
       id: @book.id.to_s,
       title: @book.title,
       author: @book.author,
-      isbn: @book.isbn
+      isbn: @book.isbn,
+      image: @book.image
     }
     data[:errors] = @book.errors if@book.errors.any?
     data
