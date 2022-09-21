@@ -12,6 +12,7 @@ class Book
   field :title, type: String
   field :author, type: String
   field :isbn, type: String
+  field :image, type: String
 
   validates :title, presence: true
   validates :author, presence: true
