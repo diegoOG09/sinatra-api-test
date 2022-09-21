@@ -25,6 +25,24 @@ class Book
   scope :author, -> (author) { where(author: author) }
 end
 
+# Serializers
+class BookSerializer
+  def initialize(book)
+    @book = book
+  end
+
+  def as_json(*)
+    data = {
+      id: @book.id.to_s,
+      title: @book.title,
+      author: @book.author,
+      isbn: @book.isbn
+    }
+    data[:errors] = @book.errors if@book.errors.any?
+    data
+  end
+end
+
 # Endpoints
 get '/' do
   'Welcome to Booklist!'
@@ -48,6 +66,18 @@ namespace '/api/v1' do
         halt 400, { message:'Invalid JSON' }.to_json
       end
     end
+
+    def book
+      @book ||= Book.where(id: params[:id].first)
+    end
+
+    def halt_if_not_found!
+      halt(404, { message: 'Book Not Found' }.to_json) unless book
+    end
+
+    def serialize(book)
+      BookSerializer.new(book).to_json
+    end
   end
 
   get '/books' do
@@ -61,53 +91,26 @@ namespace '/api/v1' do
   end
 
   get '/books/:id' do |id|
-    book = Book.where(id: id).first
-    halt(404, { message:'Book Not Found' }.to_json) unless book
-    BookSerializer.new(book).to_json
+    halt_if_not_found!
+    serialize(book)
   end
 
   post '/books' do
     book = Book.new(json_params)
-    if book.save
-      response.headers['Location'] = "#{base_url}/api/v1/books/#{book.id}"
-      status 201
-    else
-      status 422
-      body BookSerializer.new(book).to_json
-    end
+    halt 422, serialize(book) unless book.save
+    response.headers['Location'] = "#{base_url}/api/v1/books/#{book.id}"
+    status 201
   end
 
   patch '/books/:id' do |id|
-    book = Book.where(id: id).first
-    halt(404, { message:'Book Not Found' }.to_json) unless book
-    if book.update_attributes(json_params)
-      BookSerializer.new(book).to_json
-    else
-      status 422
-      body BookSerializer.new(book).to_json
-    end
+    half_if_not_found!
+    halt 422, serialize(book) unless book.update_attributes(json_params)
+    serialize(book)
   end
 
   delete '/books/:id' do |id|
-    book = Book.where(id: id).first
     book.destroy if book
     status 204
   end
 end
 
-class BookSerializer
-  def initialize(book)
-    @book = book
-  end
-
-  def as_json(*)
-    data = {
-      id: @book.id.to_s,
-      title: @book.title,
-      author: @book.author,
-      isbn: @book.isbn
-    }
-    data[:errors] = @book.errors if@book.errors.any?
-    data
-  end
-end
