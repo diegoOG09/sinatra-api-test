@@ -1,9 +1,15 @@
 require 'sinatra'
+require 'sinatra/cors'
 require 'mongoid'
 require 'sinatra/namespace'
 
 # DB setup
 Mongoid.load! "mongoid.config"
+
+set :allow_origin, "http://127.0.0.1:5500 http://localhost:4567/api/v1/books"
+set :allow_methods, "GET,HEAD,POST"
+set :allow_headers, "content-type,acces-control-allow-origin"
+set :expose_headers, "location,link"
 
 # Models
 class Book
@@ -86,7 +92,6 @@ namespace '/api/v1' do
 
   get '/books' do
     books = Book.all
-
     [:title, :isbn, :author].each do |filter|
       books = books.send(filter, params[filter]) if params[filter]
     end
