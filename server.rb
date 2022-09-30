@@ -112,7 +112,7 @@ namespace '/api/v1' do
   end
 
   patch '/books/:id' do |id|
-    half_if_not_found!
+    halt_if_not_found!
     halt 422, serialize(book) unless book.update_attributes(json_params)
     serialize(book)
   end
