@@ -40,7 +40,7 @@ class Movie
   field :title, type: String
   field :director, type: String
   field :image, type: String
-  field :rating, type: Number
+  field :rating, type: Numeric
 
   validates :title, presence: true
   validates :director, presence: true
@@ -142,5 +142,10 @@ namespace '/api/v1' do
     book.destroy if book
     status 204
   end
+
+  get '/movies' do
+    'Welcome to movies!'
+  end
+
 end
 
