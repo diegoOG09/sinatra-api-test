@@ -55,6 +55,15 @@ class Movie
   scope :rating, -> (rating) { where(rating: rating) }
 end
 
+class Show
+  include Mongoid::Document
+
+  field :title, type: String
+  field :director, type: String
+  field :image, type: String
+  field :rating, type: Numeric
+end
+
 # Serializers
 class BookSerializer
   def initialize(book)
@@ -144,7 +153,10 @@ namespace '/api/v1' do
   end
 
   get '/movies' do
-    'Welcome to movies!'
+    movies = Movie.all
+    [:title, :director, :platform].each do |filter|
+      movies = movies.send(filter, params[filter]) if params[filter]
+    end
   end
 
 end
