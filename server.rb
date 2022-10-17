@@ -34,6 +34,27 @@ class Book
   scope :image, -> (image) { where(image: image) }
 end
 
+class Movie
+  include Mongoid::Document
+
+  field :title, type: String
+  field :director, type: String
+  field :image, type: String
+  field :rating, type: Number
+
+  validates :title, presence: true
+  validates :director, presence: true
+  validates :image, presence: true
+  validates :rating, presence: true
+
+  index({ title: 'text' })
+
+  scope :title, -> (title) { where(title: /^#{title}/) }
+  scope :director, -> (director) { where(director: director) }
+  scope :image, -> (image) { where(image: image) }
+  scope :rating, -> (rating) { where(rating: rating) }
+end
+
 # Serializers
 class BookSerializer
   def initialize(book)
