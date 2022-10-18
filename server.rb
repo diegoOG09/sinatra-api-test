@@ -1,4 +1,4 @@
- equire 'sinatra'
+require 'sinatra'
 require 'sinatra/cors'
 require 'mongoid'
 require 'sinatra/namespace'
