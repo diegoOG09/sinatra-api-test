@@ -238,7 +238,7 @@ namespace '/api/v1' do
     movies.map { |book| MovieSerializer.new(movie) }.to_json
   end
 
-  get '/movie/:id' do |id|
+  get '/movies/:id' do |id|
     halt_if_not_found_movie!
     serialize(movie)
   end
@@ -272,7 +272,7 @@ namespace '/api/v1' do
     shows.map { |book| ShowSerializer.new(show) }.to_json
   end
 
-  get '/show/:id' do |id|
+  get '/shows/:id' do |id|
     halt_if_not_found_show!
     serialize(show)
   end
