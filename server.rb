@@ -95,9 +95,43 @@ class BookSerializer
   end
 end
 
+class MovieSerializer
+  def initialize(movie)
+    @movie = movie
+  end
+
+  def as_json(*)
+    data = {
+      id: @movie.id.to_s,
+      title: @movie.title,
+      director: @movie.director,
+      image: @movie.image
+    }
+    data[:errors] = @movie.errors if@movie.errors.any?
+    data
+  end
+end
+
+class ShowSerializer
+  def initialize(movie)
+    @show = movie
+  end
+
+  def as_json(*)
+    data = {
+      id: @movie.id.to_s,
+      title: @movie.title,
+      director: @movie.director,
+      image: @movie.image
+    }
+    data[:errors] = @show.errors if@show.errors.any?
+    data
+  end
+end
+
 # Endpoints
 get '/' do
-  'Welcome to Booklist!'
+  'Welcome to my favorites books, movies and shows'
 end
 
 namespace '/api/v1' do
@@ -121,6 +155,14 @@ namespace '/api/v1' do
 
     def book
       @book ||= Book.where(id: params[:id].first)
+    end
+
+    def movie
+      @movie ||= Movie.where(id: params[:id].first)
+    end
+
+    def show
+      @show ||= Show.where(id: params[:id].first)
     end
 
     def halt_if_not_found!
