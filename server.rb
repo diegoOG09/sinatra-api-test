@@ -1,4 +1,4 @@
-require 'sinatra'
+ equire 'sinatra'
 require 'sinatra/cors'
 require 'mongoid'
 require 'sinatra/namespace'
@@ -229,6 +229,7 @@ namespace '/api/v1' do
 
   # Movies
   get '/movies' do
+    'Welcome to movies list'
     movies = Movie.all
     [:title, :director, :platform].each do |filter|
       movies = movies.send(filter, params[filter]) if params[filter]
@@ -237,7 +238,7 @@ namespace '/api/v1' do
     movies.map { |book| MovieSerializer.new(movie) }.to_json
   end
 
-  get '/movie:id' do |id|
+  get '/movie/:id' do |id|
     halt_if_not_found_movie!
     serialize(movie)
   end
@@ -257,6 +258,40 @@ namespace '/api/v1' do
 
   delete '/movies/:id' do |id|
     movie.destroy if movie
+    status 404
+  end
+
+  # Shows
+  get '/shows' do
+    'Welcome to Show list'
+    shows = Show.all
+    [:title, :director, :platform].each do |filter|
+      shows = shows.send(filter, params[filter]) if params[filters]
+    end
+
+    shows.map { |book| ShowSerializer.new(show) }.to_json
+  end
+
+  get '/show/:id' do |id|
+    halt_if_not_found_show!
+    serialize(show)
+  end
+
+  post '/shows' do |id|
+    show = Show.new(json_params)
+    halt 422, serialize(show) unless show.save
+    response.headers['Location'] = "#{base_url}/api/v1/shows/#{show.id}"
+    status 201
+  end
+
+  patch '/shows/:id' do |id|
+    halt_if_not_found_show!
+    halt 422, serialize(show) unless show.update_attributes(json_params)
+    serialize(show)
+  end
+
+  delete '/shows/:id' do |id|
+    show.destroy if show
     status 404
   end
 
