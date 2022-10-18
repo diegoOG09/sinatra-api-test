@@ -62,6 +62,18 @@ class Show
   field :director, type: String
   field :image, type: String
   field :rating, type: Numeric
+
+  validates :title, presence: true
+  validates :director, presence: true
+  validates :image, presence: true
+  validates :rating, presence: true
+
+  index({ title: 'text' })
+
+  scope :title, -> (title) { where(title: /^#{title}/) }
+  scope :director, -> (director) { where(director: director) }
+  scope :image, -> (image) { where(image: image) }
+  scope :rating, -> (rating) { where(rating: rating) }
 end
 
 # Serializers
