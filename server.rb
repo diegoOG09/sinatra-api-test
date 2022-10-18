@@ -166,14 +166,31 @@ namespace '/api/v1' do
     end
 
     def halt_if_not_found!
-      halt(404, { message: 'Book Not Found' }.to_json) unless book
+      halt(404, { message: 'Item not found' }.to_json) unless book
+    end
+
+    def halt_if_not_found_movie!
+      halt(404, { message: 'Movie not found'  }.to_json) unless movie
+    end
+
+    def halt_if_not_found_show!
+      halt(404, { message: 'Show not found' }.to_json) unless show
     end
 
     def serialize(book)
       BookSerializer.new(book).to_json
     end
+
+    def serialize_movie(movie)
+      MovieSerializer.new(movie).to_json
+    end
+
+    def serialize_show(movie)
+      ShowSerializer.new(show).to_json
+    end
   end
 
+  # Books
   get '/books' do
     books = Book.all
     [:title, :isbn, :author].each do |filter|
@@ -183,11 +200,13 @@ namespace '/api/v1' do
     books.map { |book| BookSerializer.new(book)  }.to_json
   end
 
+  # GET
   get '/books/:id' do |id|
     halt_if_not_found!
     serialize(book)
   end
 
+  # POST
   post '/books' do
     book = Book.new(json_params)
     halt 422, serialize(book) unless book.save
@@ -195,22 +214,50 @@ namespace '/api/v1' do
     status 201
   end
 
+  # PATCH
   patch '/books/:id' do |id|
     halt_if_not_found!
     halt 422, serialize(book) unless book.update_attributes(json_params)
     serialize(book)
   end
 
+  # DELETE
   delete '/books/:id' do |id|
     book.destroy if book
     status 204
   end
 
+  # Movies
   get '/movies' do
     movies = Movie.all
     [:title, :director, :platform].each do |filter|
       movies = movies.send(filter, params[filter]) if params[filter]
     end
+
+    movies.map { |book| MovieSerializer.new(movie) }.to_json
+  end
+
+  get '/movie:id' do |id|
+    halt_if_not_found_movie!
+    serialize(movie)
+  end
+
+  post '/movies' do |id|
+    movie = Movie.new(json_params)
+    halt 422, serialize(movie) unless movie.save
+    response.headers['Location'] = "#{base_url}/api/v1/movies/#{movie.id}"
+    status 201
+  end
+
+  patch '/movies/:id' do |id|
+    halt_if_not_found_movie!
+    halt 422, serialize(movie) unless movie.update_attributes(json_params)
+    serialize(movie)
+  end
+
+  delete '/movies/:id' do |id|
+    movie.destroy if movie
+    status 404
   end
 
 end
