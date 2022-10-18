@@ -266,7 +266,7 @@ namespace '/api/v1' do
     'Welcome to Show list'
     shows = Show.all
     [:title, :director, :platform].each do |filter|
-      shows = shows.send(filter, params[filter]) if params[filters]
+      shows = shows.send(filter, params[filter]) if params[filter]
     end
 
     shows.map { |book| ShowSerializer.new(show) }.to_json
