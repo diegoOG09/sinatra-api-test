@@ -6,7 +6,7 @@ require 'sinatra/namespace'
 # DB setup
 Mongoid.load! "mongoid.config"
 
-set :allow_origin, "http://localhost:5173 http://localhost:4567/api/v1/books"
+set :allow_origin, "http://localhost:5173 http://localhost:4567/api/v1/"
 set :allow_methods, "GET,HEAD,POST"
 set :allow_headers, "content-type,acces-control-allow-origin"
 set :expose_headers, "location,link"
@@ -105,7 +105,8 @@ class MovieSerializer
       id: @movie.id.to_s,
       title: @movie.title,
       director: @movie.director,
-      image: @movie.image
+      image: @movie.image,
+      rating: @movie.rating
     }
     data[:errors] = @movie.errors if@movie.errors.any?
     data
@@ -119,10 +120,11 @@ class ShowSerializer
 
   def as_json(*)
     data = {
-      id: @movie.id.to_s,
-      title: @movie.title,
-      director: @movie.director,
-      image: @movie.image
+      id: @show.id.to_s,
+      title: @show.title,
+      director: @show.director,
+      image: @show.image,
+      rating: @show.rating
     }
     data[:errors] = @show.errors if@show.errors.any?
     data
@@ -231,11 +233,11 @@ namespace '/api/v1' do
   get '/movies' do
     'Welcome to movies list'
     movies = Movie.all
-    [:title, :director, :platform].each do |filter|
+    [:title, :director, :rating].each do |filter|
       movies = movies.send(filter, params[filter]) if params[filter]
     end
 
-    movies.map { |book| MovieSerializer.new(movie) }.to_json
+    movies.map { |movie| MovieSerializer.new(movie) }.to_json
   end
 
   get '/movies/:id' do |id|
@@ -265,11 +267,11 @@ namespace '/api/v1' do
   get '/shows' do
     'Welcome to Show list'
     shows = Show.all
-    [:title, :director, :platform].each do |filter|
+    [:title, :director, :rating].each do |filter|
       shows = shows.send(filter, params[filter]) if params[filter]
     end
 
-    shows.map { |book| ShowSerializer.new(show) }.to_json
+    shows.map { |show| ShowSerializer.new(show) }.to_json
   end
 
   get '/shows/:id' do |id|
