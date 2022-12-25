@@ -6,7 +6,7 @@ require 'sinatra/namespace'
 # DB setup
 Mongoid.load! "mongoid.config"
 
-set :allow_origin, "http://localhost:5173 http://localhost:4567/api/v1/"
+set :allow_origin, "http://127.0.0.1:5173 http://localhost:4567/api/v1"
 set :allow_methods, "GET,HEAD,POST"
 set :allow_headers, "content-type,acces-control-allow-origin"
 set :expose_headers, "location,link"
